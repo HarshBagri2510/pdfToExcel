@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>PDF Upload</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script>
+        function showMessage(message) {
+            document.getElementById("message").innerText = message;
+            document.getElementById("message").style.display = "block";
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <h2 class="mt-5">Upload PDF File</h2>
+    <form method="POST" action="/api/upload/pdfUpload" enctype="multipart/form-data" onsubmit="showMessage('File uploaded successfully!');">
+        <div class="form-group">
+            <label for="file">Choose PDF file to upload:</label>
+            <input type="file" id="file" name="file" class="form-control-file" accept="application/pdf" required>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Upload</button>
+    </form>
+    <div id="message" class="alert alert-success mt-3" style="display:none;"></div>
+</div>
+</body>
+</html>

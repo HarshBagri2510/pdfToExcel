@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Excel Converter</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script>
+        function showMessage(message) {
+            document.getElementById("message").innerText = message;
+            document.getElementById("message").style.display = "block";
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('uploadForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                var formData = new FormData();
+                var fileInput = document.getElementById('file');
+                var file = fileInput.files[0];
+                
+                if (!file) {
+                    alert("Please select a file.");
+                    return;
+                }
+                
+                formData.append('file', file);
+
+                fetch('/api/upload/convert', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Failed to convert PDF.");
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(new Blob([blob]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'converted.xlsx');
+                    document.body.appendChild(link);
+                    link.click();
+                    link.parentNode.removeChild(link);
+                    showMessage('File uploaded and converted successfully!');
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    showMessage("Failed to convert PDF.");
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <h2 class="mt-5">PDF to Excel Converter</h2>
+    <form id="uploadForm" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Choose PDF file to upload:</label>
+            <input type="file" id="file" name="file" class="form-control-file" accept="application/pdf" required>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Upload</button>
+    </form>
+    <div id="message" class="alert alert-success mt-3" style="display:none;"></div>
+</div>
+</body>
+</html>
